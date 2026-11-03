@@ -529,6 +529,14 @@ Rectangle {
         opacity: (root.state === "CASE_2" || root.state === "CASE_3") ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 400 } }
 
+        ListModel {
+            id: case2FeedModel
+        }
+
+        ListModel {
+            id: case3EventModel
+        }
+
         Plugin {
             id: mapPlugin
             name: "osm"
@@ -975,22 +983,20 @@ Rectangle {
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.margins: 22
-            width: 380
-            height: hudColumn.implicitHeight + 28
+            width: 400
+            height: 320
             radius: 2
             visible: root.state === "CASE_2"
             opacity: root.state === "CASE_2" ? 1.0 : 0.0
             Behavior on opacity { NumberAnimation { duration: 400 } }
 
-            color: Qt.rgba(0.08, 0.015, 0.015, 0.88)
+            color: Qt.rgba(0.08, 0.015, 0.015, 0.92)
             border.color: "#ff0033"
             border.width: 1
 
             Column {
                 id: hudColumn
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
+                anchors.fill: parent
                 anchors.margins: 14
                 spacing: 8
 
@@ -1018,14 +1024,27 @@ Rectangle {
                 Column {
                     width: parent.width
                     spacing: 4
-                    Repeater {
-                        model: case2Manager.feedLines
+
+                    ListView {
+                        id: hudListView
+                        width: parent.width
+                        height: hudColumn.height - 95
+                        model: case2FeedModel
+                        clip: true
+                        spacing: 3
+                        interactive: false
                         delegate: Text {
-                            text: modelData
-                            color: index === case2Manager.feedLines.length - 1 ? "#ffffff" : Qt.rgba(1.0, 0.8, 0.8, 0.85)
-                            font.family: root.fontFamily; font.pixelSize: 11; font.letterSpacing: 0.8; wrapMode: Text.WordWrap; width: hudColumn.width
+                            width: hudListView.width
+                            text: model.entry
+                            color: index === case2FeedModel.count - 1 ? "#ffffff" : Qt.rgba(1.0, 0.8, 0.8, 0.85)
+                            font.family: root.fontFamily
+                            font.pixelSize: 11
+                            font.letterSpacing: 0.8
+                            wrapMode: Text.WordWrap
                         }
+                        onCountChanged: positionViewAtEnd()
                     }
+
                     Text {
                         text: case2Manager.isFinished ? " " : "> _"
                         color: "#ff0033"; font.family: root.fontFamily; font.pixelSize: 11; font.weight: Font.Bold
@@ -1240,23 +1259,21 @@ Rectangle {
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.margins: 22
-            width: 410
-            height: pmoColumn.implicitHeight + 28
+            width: 440
+            height: 480
             radius: 2
             visible: root.state === "CASE_3"
             opacity: root.state === "CASE_3" ? 1.0 : 0.0
             Behavior on opacity { NumberAnimation { duration: 400 } }
 
             // Strategic Forces Command Amber/Military Gold Aesthetic
-            color: Qt.rgba(0.08, 0.05, 0.02, 0.92)
+            color: Qt.rgba(0.08, 0.05, 0.02, 0.94)
             border.color: root.pmoGoldColor
             border.width: 1
 
             Column {
                 id: pmoColumn
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
+                anchors.fill: parent
                 anchors.margins: 14
                 spacing: 8
 
@@ -1284,14 +1301,28 @@ Rectangle {
                 Column {
                     width: parent.width
                     spacing: 4
-                    Repeater {
-                        model: case3Manager.eventLines
+
+                    ListView {
+                        id: pmoListView
+                        width: parent.width
+                        height: pmoColumn.height - 95
+                        model: case3EventModel
+                        clip: true
+                        spacing: 2
+                        interactive: true
+                        boundsBehavior: Flickable.StopAtBounds
                         delegate: Text {
-                            text: modelData
-                            color: index === case3Manager.eventLines.length - 1 ? "#ffffff" : Qt.rgba(1.0, 0.9, 0.7, 0.85)
-                            font.family: root.fontFamily; font.pixelSize: 10; font.letterSpacing: 0.6; wrapMode: Text.WordWrap; width: pmoColumn.width
+                            width: pmoListView.width
+                            text: model.entry
+                            color: index === case3EventModel.count - 1 ? "#ffffff" : Qt.rgba(1.0, 0.9, 0.7, 0.85)
+                            font.family: root.fontFamily
+                            font.pixelSize: 10
+                            font.letterSpacing: 0.6
+                            wrapMode: Text.WordWrap
                         }
+                        onCountChanged: positionViewAtEnd()
                     }
+
                     Text {
                         text: case3Manager.isFinished ? "[ MISSION COMPLETE // DEFCON 5 ]" : "> _"
                         color: root.pmoGoldColor; font.family: root.fontFamily; font.pixelSize: 11; font.weight: Font.Bold
@@ -1413,11 +1444,14 @@ Rectangle {
     // ═══════════════════════════════════════════
     QtObject {
         id: case2Manager
-        property var feedLines: []
         property bool isFinished: false
 
+        function addLine(txt) {
+            case2FeedModel.append({ "entry": txt })
+        }
+
         function startSequence() {
-            feedLines = []
+            case2FeedModel.clear()
             isFinished = false
             worldMap.laserActive = false
             worldMap.targetLocked = false
@@ -1453,7 +1487,7 @@ Rectangle {
         interval: 300
         repeat: false
         onTriggered: {
-            case2Manager.feedLines = ["> INITIALIZING ORBITAL TRACKING..."]
+            case2Manager.addLine("> INITIALIZING ORBITAL TRACKING...")
             panZoomAnim.restart()
             step2Timer.restart()
         }
@@ -1482,9 +1516,7 @@ Rectangle {
         interval: 1000
         repeat: false
         onTriggered: {
-            var lines = case2Manager.feedLines
-            lines.push("> SATELLITE UPLINK ESTABLISHED.")
-            case2Manager.feedLines = lines
+            case2Manager.addLine("> SATELLITE UPLINK ESTABLISHED.")
             step3Timer.restart()
         }
     }
@@ -1494,9 +1526,7 @@ Rectangle {
         interval: 900
         repeat: false
         onTriggered: {
-            var lines = case2Manager.feedLines
-            lines.push("> SECURING ENCRYPTED CHANNELS...")
-            case2Manager.feedLines = lines
+            case2Manager.addLine("> SECURING ENCRYPTED CHANNELS...")
             satDeployAnim.restart()
             step4Timer.restart()
         }
@@ -1513,9 +1543,7 @@ Rectangle {
         interval: 850
         repeat: false
         onTriggered: {
-            var lines = case2Manager.feedLines
-            lines.push("> ACQUIRING GPS COORDINATES...")
-            case2Manager.feedLines = lines
+            case2Manager.addLine("> ACQUIRING GPS COORDINATES...")
             step5Timer.restart()
         }
     }
@@ -1525,9 +1553,7 @@ Rectangle {
         interval: 900
         repeat: false
         onTriggered: {
-            var lines = case2Manager.feedLines
-            lines.push("> TRIANGULATING TRAJECTORY...")
-            case2Manager.feedLines = lines
+            case2Manager.addLine("> TRIANGULATING TRAJECTORY...")
             step6Timer.restart()
         }
     }
@@ -1537,9 +1563,7 @@ Rectangle {
         interval: 950
         repeat: false
         onTriggered: {
-            var lines = case2Manager.feedLines
-            lines.push("> TARGET LOCKED.")
-            case2Manager.feedLines = lines
+            case2Manager.addLine("> TARGET LOCKED.")
             case2Manager.isFinished = true
 
             worldMap.targetLocked = true
@@ -1566,7 +1590,6 @@ Rectangle {
     // ═══════════════════════════════════════════
     QtObject {
         id: case3Manager
-        property var eventLines: []
         property var ballisticPath: []
         property bool isFinished: false
         property real subHullY: 90
@@ -1575,8 +1598,12 @@ Rectangle {
         property bool missileEgressing: false
         property string subStatusText: "STATUS: SUBMERGED // DEPTH: 80M"
 
+        function addLine(txt) {
+            case3EventModel.append({ "entry": txt })
+        }
+
         function startSequence() {
-            eventLines = []
+            case3EventModel.clear()
             isFinished = false
             subHullY = 90
             missileEgressY = 10
@@ -1622,10 +1649,8 @@ Rectangle {
         interval: 400
         repeat: false
         onTriggered: {
-            case3Manager.eventLines = [
-                "> STRATEGIC FORCES COMMAND (SFC) ALERT ACKNOWLEDGED.",
-                "> SCANNING THEATRE LAUNCH PLATFORMS..."
-            ]
+            case3Manager.addLine("> STRATEGIC FORCES COMMAND (SFC) ALERT ACKNOWLEDGED.")
+            case3Manager.addLine("> SCANNING THEATRE LAUNCH PLATFORMS...")
             c3Step2Timer.restart()
         }
     }
@@ -1636,12 +1661,10 @@ Rectangle {
         interval: 1200
         repeat: false
         onTriggered: {
-            var lines = case3Manager.eventLines
-            lines.push("  [+] AIR FORCE: TEJAS MK1A // BASE TRISHUL [ARMED]")
-            lines.push("  [+] NAVY: INS VIKRANT CSG // ARABIAN SEA [PATROL]")
-            lines.push("  [+] STRATEGIC: INS ARIHANT // BAY OF BENGAL [OPTIMAL]")
-            lines.push("> SELECTING PRIMARY STRIKE ASSET: INS ARIHANT")
-            case3Manager.eventLines = lines
+            case3Manager.addLine("  [+] AIR FORCE: TEJAS MK1A // BASE TRISHUL [ARMED]")
+            case3Manager.addLine("  [+] NAVY: INS VIKRANT CSG // ARABIAN SEA [PATROL]")
+            case3Manager.addLine("  [+] STRATEGIC: INS ARIHANT // BAY OF BENGAL [OPTIMAL]")
+            case3Manager.addLine("> SELECTING PRIMARY STRIKE ASSET: INS ARIHANT")
 
             // Shift focus between Target and Launch Asset (Bay of Bengal)
             c3FocusPanAnim.restart()
@@ -1674,10 +1697,8 @@ Rectangle {
         interval: 1800
         repeat: false
         onTriggered: {
-            var lines = case3Manager.eventLines
-            lines.push("> SECURE QUANTUM LINK ESTABLISHED WITH ASSET.")
-            lines.push("> AWAITING DUAL-KEY AUTH FROM PMO & COMMANDER-IN-CHIEF...")
-            case3Manager.eventLines = lines
+            case3Manager.addLine("> SECURE QUANTUM LINK ESTABLISHED WITH ASSET.")
+            case3Manager.addLine("> AWAITING DUAL-KEY AUTH FROM PMO & COMMANDER-IN-CHIEF...")
             c3Step4Timer.restart()
         }
     }
@@ -1688,12 +1709,10 @@ Rectangle {
         interval: 1400
         repeat: false
         onTriggered: {
-            var lines = case3Manager.eventLines
-            lines.push("> VERIFYING DUAL-KEY PROTOCOL:")
-            lines.push("  [PMO / COMMANDER-IN-CHIEF]: CODE #984-ALPHA [MATCHED]")
-            lines.push("  [SUBMARINE CAPTAIN CODE]: #412-KILO [MATCHED]")
-            lines.push("> STRIKE AUTHORIZATION GRANTED BY PRIME MINISTER.")
-            case3Manager.eventLines = lines
+            case3Manager.addLine("> VERIFYING DUAL-KEY PROTOCOL:")
+            case3Manager.addLine("  [PMO / COMMANDER-IN-CHIEF]: CODE #984-ALPHA [MATCHED]")
+            case3Manager.addLine("  [SUBMARINE CAPTAIN CODE]: #412-KILO [MATCHED]")
+            case3Manager.addLine("> STRIKE AUTHORIZATION GRANTED BY PRIME MINISTER.")
 
             // Submarine begins surfacing animation in FLIR cam
             case3Manager.subStatusText = "STATUS: BLOWING MAIN BALLAST // SURFACING..."
@@ -1718,9 +1737,7 @@ Rectangle {
         interval: 1700
         repeat: false
         onTriggered: {
-            var lines = case3Manager.eventLines
-            lines.push("> INS ARIHANT SURFACED. OPENING VLS CELL-04 HATCH...")
-            case3Manager.eventLines = lines
+            case3Manager.addLine("> INS ARIHANT SURFACED. OPENING VLS CELL-04 HATCH...")
 
             case3Manager.hatchOpen = true
             case3Manager.subStatusText = "STATUS: HATCH OPEN // COLD GAS EJECTION ARMED"
@@ -1735,10 +1752,8 @@ Rectangle {
         interval: 1200
         repeat: false
         onTriggered: {
-            var lines = case3Manager.eventLines
-            lines.push("> MISSILE EGRESS: K-4 SLBM EJECTED FROM SILO!")
-            lines.push("> BOOSTER IGNITION CONFIRMED. CLIMBING TO APOGEE...")
-            case3Manager.eventLines = lines
+            case3Manager.addLine("> MISSILE EGRESS: K-4 SLBM EJECTED FROM SILO!")
+            case3Manager.addLine("> BOOSTER IGNITION CONFIRMED. CLIMBING TO APOGEE...")
 
             case3Manager.missileEgressing = true
             case3Manager.subStatusText = "STATUS: LAUNCH COMMENCED // 1ST STAGE IGNITION"
@@ -1808,9 +1823,7 @@ Rectangle {
         interval: 2200
         repeat: false
         onTriggered: {
-            var lines = case3Manager.eventLines
-            lines.push("> APOGEE REACHED (350 KM). TERMINAL DIVE AT MACH 7.5...")
-            case3Manager.eventLines = lines
+            case3Manager.addLine("> APOGEE REACHED (350 KM). TERMINAL DIVE AT MACH 7.5...")
             case3Manager.subStatusText = "STATUS: LAUNCH SUCCESSFUL // RE-SUBMERGING TO 120M"
         }
     }
@@ -1821,11 +1834,9 @@ Rectangle {
         interval: 200
         repeat: false
         onTriggered: {
-            var lines = case3Manager.eventLines
-            lines.push("> KINETIC IMPACT CONFIRMED AT 21.1458° N, 79.0882° E.")
-            lines.push("> TARGET ANNIHILATED. BDA ASSESSMENT: 100% NEUTRALIZED.")
-            lines.push("> MISSION ACCOMPLISHED. STRATEGIC ORDER EXECUTED.")
-            case3Manager.eventLines = lines
+            case3Manager.addLine("> KINETIC IMPACT CONFIRMED AT 21.1458° N, 79.0882° E.")
+            case3Manager.addLine("> TARGET ANNIHILATED. BDA ASSESSMENT: 100% NEUTRALIZED.")
+            case3Manager.addLine("> MISSION ACCOMPLISHED. STRATEGIC ORDER EXECUTED.")
             case3Manager.isFinished = true
 
             // Final camera zoom into destroyed target
