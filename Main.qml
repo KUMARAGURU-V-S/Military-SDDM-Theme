@@ -32,7 +32,9 @@ Rectangle {
     readonly property color alertRedColor:      (typeof config !== "undefined" && config.alertRedColor)      ? config.alertRedColor      : "#ff0033"
     readonly property int   fontSize:           (typeof config !== "undefined" && config.fontSize)          ? parseInt(config.fontSize) : 13
     readonly property string fontFamily:        "monospace"
-    readonly property int   logoSize:           (typeof config !== "undefined" && config.logoSize)          ? parseInt(config.logoSize) : 175
+    readonly property int   logoSize:               (typeof config !== "undefined" && config.logoSize)               ? parseInt(config.logoSize) : 250
+    readonly property string loginButtonText:       (typeof config !== "undefined" && config.loginButtonText)       ? config.loginButtonText    : "[ AUTHENTICATE ]"
+    readonly property string loginButtonLoadingText:(typeof config !== "undefined" && config.loginButtonLoadingText)? config.loginButtonLoadingText : "AUTHENTICATING..."
 
     // ── State flags ──
     property bool funMode: false
@@ -66,7 +68,7 @@ Rectangle {
             id: centerColumn
             anchors.centerIn: parent
             spacing: 20
-            width: 390
+            width: 420
 
             // ── Centerpiece: NIA Logo (rendered as SVG) ──
             Item {
@@ -292,7 +294,7 @@ Rectangle {
                         spacing: 8
 
                         Text {
-                            text: loginBtn.isLoading ? "AUTHENTICATING..." : "[ AUTHORIZE ACCESS ]"
+                            text: loginBtn.isLoading ? root.loginButtonLoadingText : root.loginButtonText
                             color: loginBtnMouse.containsMouse ? "#ffffff" : root.textColor
                             font.family: root.fontFamily
                             font.pixelSize: 12
