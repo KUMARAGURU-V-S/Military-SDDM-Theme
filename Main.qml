@@ -1,9 +1,10 @@
 /*
- *  National Investigation Agency (NIA) Tactical SDDM Theme
- *  ────────────────────────────────────────────────────────
+ *  NATIONAL INVESTIGATION AGENCY (NIA) - TACTICAL DEFENSE SDDM GREETER
+ *  ──────────────────────────────────────────────────────────────────
+ *  Aesthetic: Authentic military command console & tactical terminal
  *  State Machine:
- *    - CASE_1: Secure initial login terminal with NIA SVG centerpiece
- *    - CASE_2: Tactical interactive satellite & laser sequence (hook ready for update)
+ *    - CASE_1: Tactical command authentication screen with centered NIA SVG emblem
+ *    - CASE_2: Tactical OpenStreetMap satellite & laser targeting sequence
  */
 
 import QtQuick
@@ -14,19 +15,24 @@ Rectangle {
     id: root
     width: Screen.width
     height: Screen.height
-    color: (typeof config !== "undefined" && config.backgroundColor) ? config.backgroundColor : "#0a0a0a"
+    color: (typeof config !== "undefined" && config.backgroundColor) ? config.backgroundColor : "#080a08"
 
     // ═══════════════════════════════════════════
-    //  THEME CONFIGURATION & PROPERTIES
+    //  MILITARY TACTICAL CONFIGURATION
     // ═══════════════════════════════════════════
-    readonly property color accentColor:    (typeof config !== "undefined" && config.accentColor)   ? config.accentColor   : "#00d4ff"
-    readonly property color textColor:      (typeof config !== "undefined" && config.textColor)     ? config.textColor     : "#e8e8e8"
-    readonly property color errorColor:     (typeof config !== "undefined" && config.errorColor)    ? config.errorColor    : "#ff4757"
-    readonly property color alertRedColor:  (typeof config !== "undefined" && config.alertRedColor) ? config.alertRedColor : "#ff0033"
-    readonly property color inputBgColor:   (typeof config !== "undefined" && config.inputBgColor)  ? config.inputBgColor  : "#14171c"
-    readonly property int   fontSize:       (typeof config !== "undefined" && config.fontSize)      ? parseInt(config.fontSize) : 14
-    readonly property string fontFamily:    (typeof config !== "undefined" && config.fontFamily)   ? config.fontFamily    : "sans-serif"
-    readonly property int   logoSize:       (typeof config !== "undefined" && config.logoSize)      ? parseInt(config.logoSize) : 190
+    readonly property color militaryOlive:      (typeof config !== "undefined" && config.militaryOlive)      ? config.militaryOlive      : "#283523"
+    readonly property color militaryOliveHover: (typeof config !== "undefined" && config.militaryOliveHover) ? config.militaryOliveHover : "#384a32"
+    readonly property color militaryBorder:     (typeof config !== "undefined" && config.buttonBorderColor)  ? config.buttonBorderColor  : "#4e6547"
+    readonly property color hudGreen:           (typeof config !== "undefined" && config.highlightColor)     ? config.highlightColor     : "#4ef289"
+    readonly property color textColor:          (typeof config !== "undefined" && config.textColor)          ? config.textColor          : "#d8e0d5"
+    readonly property color mutedTextColor:     (typeof config !== "undefined" && config.mutedTextColor)     ? config.mutedTextColor     : "#687a65"
+    readonly property color inputBgColor:       (typeof config !== "undefined" && config.inputBgColor)       ? config.inputBgColor       : "#0b0f0c"
+    readonly property color inputBorderColor:   (typeof config !== "undefined" && config.inputBorderColor)   ? config.inputBorderColor   : "#202a22"
+    readonly property color errorColor:         (typeof config !== "undefined" && config.errorColor)         ? config.errorColor         : "#d9383a"
+    readonly property color alertRedColor:      (typeof config !== "undefined" && config.alertRedColor)      ? config.alertRedColor      : "#ff0033"
+    readonly property int   fontSize:           (typeof config !== "undefined" && config.fontSize)          ? parseInt(config.fontSize) : 13
+    readonly property string fontFamily:        "monospace"
+    readonly property int   logoSize:           (typeof config !== "undefined" && config.logoSize)          ? parseInt(config.logoSize) : 175
 
     // ── State flags ──
     property bool funMode: false
@@ -34,36 +40,33 @@ Rectangle {
     property color currentErrorColor: root.errorColor
     property bool isBlinking: false
 
-    // State machine: "CASE_1" (Default initial login screen), "CASE_2" (Tactical map sequence)
+    // State machine: "CASE_1" (Initial tactical login), "CASE_2" (Tactical map sequence)
     state: "CASE_1"
     signal triggerCase2()
 
     onTriggerCase2: {
-        console.log("[SDDM] Triggering CASE 2: Tactical OpenStreetMap satellite & laser sequence");
+        console.log("[TACTICAL SDDM] Triggering CASE 2: Tactical satellite and laser sequence");
     }
 
     // ═══════════════════════════════════════════
-    //  CASE 1: INITIAL LOGIN VIEW
+    //  CASE 1: TACTICAL MILITARY LOGIN SCREEN
     // ═══════════════════════════════════════════
     Item {
         id: case1Container
         anchors.fill: parent
         visible: root.state === "CASE_1"
 
-        // Subtle dark military vignette / grid lines
-        Rectangle {
-            anchors.fill: parent
-            color: "transparent"
-            border.color: Qt.rgba(1, 1, 1, 0.03)
-            border.width: 1
-        }
+        // Tactical Corner Crosshair Reticles
+        Text { anchors.left: parent.left; anchors.top: parent.top; anchors.margins: 18; text: "┌──[ NIA // SEC-OPS ]"; color: root.mutedTextColor; font.family: root.fontFamily; font.pixelSize: 11; font.letterSpacing: 1 }
+        Text { anchors.right: parent.right; anchors.top: parent.top; anchors.margins: 18; text: "[ NODE-01 // ACTIVE ]──┐"; color: root.mutedTextColor; font.family: root.fontFamily; font.pixelSize: 11; font.letterSpacing: 1 }
+        Text { anchors.left: parent.left; anchors.bottom: parent.bottom; anchors.margins: 18; text: "└──[ CLASSIFICATION: TOP SECRET ]"; color: root.mutedTextColor; font.family: root.fontFamily; font.pixelSize: 11; font.letterSpacing: 1 }
 
-        // Center Container: Centerpiece NIA Logo + Input Prompts directly below
+        // Center Panel: Centerpiece NIA SVG Logo + Inputs directly below
         Column {
             id: centerColumn
             anchors.centerIn: parent
-            spacing: 24
-            width: 380
+            spacing: 20
+            width: 390
 
             // ── Centerpiece: NIA Logo (rendered as SVG) ──
             Item {
@@ -83,25 +86,25 @@ Rectangle {
                 }
             }
 
-            // Agency Sub-header
+            // Tactical Military Classification Header
             Column {
                 width: parent.width
-                spacing: 4
+                spacing: 3
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "NATIONAL INVESTIGATION AGENCY"
-                    color: Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.85)
+                    color: root.textColor
                     font.family: root.fontFamily
                     font.pixelSize: 13
-                    font.letterSpacing: 2.5
-                    font.weight: Font.DemiBold
+                    font.letterSpacing: 2
+                    font.weight: Font.Bold
                 }
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "CENTRAL AUTHENTICATION TERMINAL"
-                    color: Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.45)
+                    text: "CENTRAL COMMAND AUTHENTICATION TERMINAL"
+                    color: root.mutedTextColor
                     font.family: root.fontFamily
                     font.pixelSize: 10
                     font.letterSpacing: 1.5
@@ -111,32 +114,32 @@ Rectangle {
             // ── Login Prompts directly below the logo ──
             Column {
                 width: parent.width
-                spacing: 14
+                spacing: 12
 
-                // Username Input Box
+                // Username Input Field
                 Rectangle {
                     id: userFieldBg
                     width: parent.width
-                    height: 46
-                    radius: 6
+                    height: 44
+                    radius: 2
                     color: root.inputBgColor
-                    border.color: userField.activeFocus
-                        ? root.accentColor
-                        : Qt.rgba(1, 1, 1, 0.12)
-                    border.width: userField.activeFocus ? 2 : 1
+                    border.color: userField.activeFocus ? root.hudGreen : root.inputBorderColor
+                    border.width: 1
 
-                    Behavior on border.color { ColorAnimation { duration: 180 } }
+                    Behavior on border.color { ColorAnimation { duration: 150 } }
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 14
-                        anchors.rightMargin: 14
-                        spacing: 10
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        spacing: 8
 
                         Text {
-                            text: "👤"
-                            font.pixelSize: 14
-                            color: Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.5)
+                            text: "OPERATOR //:"
+                            font.family: root.fontFamily
+                            font.pixelSize: 11
+                            font.weight: Font.Bold
+                            color: userField.activeFocus ? root.hudGreen : root.mutedTextColor
                         }
 
                         TextInput {
@@ -145,8 +148,8 @@ Rectangle {
                             Layout.fillHeight: true
                             verticalAlignment: TextInput.AlignVCenter
                             color: root.textColor
-                            font.pixelSize: root.fontSize
                             font.family: root.fontFamily
+                            font.pixelSize: root.fontSize
                             clip: true
                             selectByMouse: true
                             text: (typeof userModel !== "undefined" && userModel) ? (userModel.lastUser || "") : ""
@@ -156,8 +159,8 @@ Rectangle {
 
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: "Enter Username"
-                                color: Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.3)
+                                text: "ENTER CALLSIGN / ID"
+                                color: Qt.rgba(root.mutedTextColor.r, root.mutedTextColor.g, root.mutedTextColor.b, 0.4)
                                 font: parent.font
                                 visible: !parent.text && !parent.activeFocus
                             }
@@ -165,30 +168,30 @@ Rectangle {
                     }
                 }
 
-                // Password Input Box
+                // Password Input Field
                 Rectangle {
                     id: passFieldBg
                     width: parent.width
-                    height: 46
-                    radius: 6
+                    height: 44
+                    radius: 2
                     color: root.inputBgColor
-                    border.color: passField.activeFocus
-                        ? root.accentColor
-                        : Qt.rgba(1, 1, 1, 0.12)
-                    border.width: passField.activeFocus ? 2 : 1
+                    border.color: passField.activeFocus ? root.hudGreen : root.inputBorderColor
+                    border.width: 1
 
-                    Behavior on border.color { ColorAnimation { duration: 180 } }
+                    Behavior on border.color { ColorAnimation { duration: 150 } }
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 14
-                        anchors.rightMargin: 10
-                        spacing: 10
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 8
+                        spacing: 8
 
                         Text {
-                            text: "🔒"
-                            font.pixelSize: 14
-                            color: Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.5)
+                            text: "PASSCODE //:"
+                            font.family: root.fontFamily
+                            font.pixelSize: 11
+                            font.weight: Font.Bold
+                            color: passField.activeFocus ? root.hudGreen : root.mutedTextColor
                         }
 
                         TextInput {
@@ -197,8 +200,8 @@ Rectangle {
                             Layout.fillHeight: true
                             verticalAlignment: TextInput.AlignVCenter
                             color: root.textColor
-                            font.pixelSize: root.fontSize
                             font.family: root.fontFamily
+                            font.pixelSize: root.fontSize
                             echoMode: showPassBtn.showPassword ? TextInput.Normal : TextInput.Password
                             clip: true
                             selectByMouse: true
@@ -208,27 +211,28 @@ Rectangle {
 
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: "Enter Password"
-                                color: Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.3)
+                                text: "ENTER SECURITY KEY"
+                                color: Qt.rgba(root.mutedTextColor.r, root.mutedTextColor.g, root.mutedTextColor.b, 0.4)
                                 font: parent.font
                                 visible: !parent.text && !parent.activeFocus
                             }
                         }
 
-                        // Show/Hide password toggle
+                        // Low-visibility show/hide toggle
                         Rectangle {
                             id: showPassBtn
                             property bool showPassword: false
-                            Layout.preferredWidth: 32
-                            Layout.preferredHeight: 32
-                            radius: 4
-                            color: showPassMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
+                            Layout.preferredWidth: 26
+                            Layout.preferredHeight: 26
+                            radius: 2
+                            color: showPassMouse.containsMouse ? Qt.rgba(255, 255, 255, 0.08) : "transparent"
 
                             Text {
                                 anchors.centerIn: parent
-                                text: parent.showPassword ? "👁️" : "🔒"
+                                text: parent.showPassword ? "👁" : "•"
+                                font.family: root.fontFamily
                                 font.pixelSize: 13
-                                opacity: 0.6
+                                color: root.mutedTextColor
                             }
 
                             MouseArea {
@@ -255,41 +259,46 @@ Rectangle {
                         anchors.centerIn: parent
                         text: root.errorMessage
                         color: root.currentErrorColor
-                        font.pixelSize: root.fontSize - 1
                         font.family: root.fontFamily
-                        font.weight: root.funMode ? Font.Bold : Font.Normal
-                        font.letterSpacing: root.funMode ? 1.2 : 0.0
+                        font.pixelSize: 12
+                        font.weight: Font.Bold
+                        font.letterSpacing: 1.2
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
 
-                        // Glowing shadow/glow effect when in Fun Mode alert
+                        // Glowing outline when in Fun Mode alert
                         style: root.funMode ? Text.Outline : Text.Normal
-                        styleColor: root.funMode ? Qt.rgba(1.0, 0.0, 0.2, 0.6) : "transparent"
+                        styleColor: root.funMode ? Qt.rgba(1.0, 0.0, 0.1, 0.7) : "transparent"
                     }
                 }
 
-                // Login Action Button
+                // ── Military Tactical Button ──
                 Rectangle {
                     id: loginBtn
                     width: parent.width
                     height: 44
-                    radius: 6
-                    color: loginBtnMouse.containsMouse
-                        ? Qt.lighter(root.accentColor, 1.15)
-                        : root.accentColor
+                    radius: 2
+                    color: loginBtnMouse.containsMouse ? root.militaryOliveHover : root.militaryOlive
+                    border.color: loginBtnMouse.containsMouse ? Qt.lighter(root.militaryBorder, 1.3) : root.militaryBorder
+                    border.width: 1
 
                     Behavior on color { ColorAnimation { duration: 150 } }
+                    Behavior on border.color { ColorAnimation { duration: 150 } }
 
                     property bool isLoading: false
 
-                    Text {
+                    RowLayout {
                         anchors.centerIn: parent
-                        text: loginBtn.isLoading ? "AUTHENTICATING..." : "AUTHORIZE ACCESS"
-                        color: "#000000"
-                        font.pixelSize: root.fontSize
-                        font.family: root.fontFamily
-                        font.weight: Font.Bold
-                        font.letterSpacing: 1.5
+                        spacing: 8
+
+                        Text {
+                            text: loginBtn.isLoading ? "AUTHENTICATING..." : "[ AUTHORIZE ACCESS ]"
+                            color: loginBtnMouse.containsMouse ? "#ffffff" : root.textColor
+                            font.family: root.fontFamily
+                            font.pixelSize: 12
+                            font.weight: Font.Bold
+                            font.letterSpacing: 1.8
+                        }
                     }
 
                     MouseArea {
@@ -310,40 +319,41 @@ Rectangle {
             id: funModeToggle
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.margins: 20
-            width: funToggleLayout.implicitWidth + 24
-            height: 36
-            radius: 18
+            anchors.margins: 18
+            width: funToggleLayout.implicitWidth + 20
+            height: 32
+            radius: 2
 
             color: funToggleMouse.containsMouse
-                ? (root.funMode ? Qt.rgba(0, 212, 255, 0.2) : Qt.rgba(255, 255, 255, 0.1))
-                : (root.funMode ? Qt.rgba(0, 212, 255, 0.1) : Qt.rgba(255, 255, 255, 0.04))
-            border.color: root.funMode ? root.accentColor : Qt.rgba(255, 255, 255, 0.15)
+                ? (root.funMode ? Qt.rgba(255, 59, 48, 0.15) : Qt.rgba(255, 255, 255, 0.08))
+                : (root.funMode ? Qt.rgba(255, 59, 48, 0.08) : "#0d130e")
+            border.color: root.funMode ? "#ff3b30" : root.inputBorderColor
             border.width: 1
 
-            Behavior on color { ColorAnimation { duration: 180 } }
-            Behavior on border.color { ColorAnimation { duration: 180 } }
+            Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on border.color { ColorAnimation { duration: 150 } }
 
             RowLayout {
                 id: funToggleLayout
                 anchors.centerIn: parent
                 spacing: 8
 
-                // Indicator pip
+                // Arming beacon pip
                 Rectangle {
-                    width: 7
-                    height: 7
-                    radius: 3.5
-                    color: root.funMode ? "#00ff88" : Qt.rgba(1, 1, 1, 0.3)
-                    Behavior on color { ColorAnimation { duration: 200 } }
+                    width: 6
+                    height: 6
+                    radius: 1
+                    color: root.funMode ? "#ff3b30" : root.mutedTextColor
+                    Behavior on color { ColorAnimation { duration: 180 } }
                 }
 
                 Text {
-                    text: root.funMode ? "Fun Mode: Active" : "Turn on Fun Mode"
-                    color: root.funMode ? root.accentColor : Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.6)
-                    font.pixelSize: 12
+                    text: root.funMode ? "[ FUN MODE: ARMED ]" : "Turn on Fun Mode"
+                    color: root.funMode ? "#ff4d4d" : root.mutedTextColor
                     font.family: root.fontFamily
-                    font.weight: root.funMode ? Font.DemiBold : Font.Normal
+                    font.pixelSize: 11
+                    font.weight: root.funMode ? Font.Bold : Font.Normal
+                    font.letterSpacing: 0.8
                 }
             }
 
@@ -354,20 +364,20 @@ Rectangle {
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
                     root.funMode = !root.funMode
-                    console.log("[SDDM] Fun Mode is now:", root.funMode)
+                    console.log("[TACTICAL SDDM] Fun Mode status:", root.funMode)
                 }
             }
 
             ToolTip {
                 visible: funToggleMouse.containsMouse
-                text: root.funMode ? "Fun Mode is ON: Click to disable" : "Click to activate Fun Mode"
-                delay: 400
+                text: root.funMode ? "Fun Mode is ARMED: Failure triggers tactical sequence" : "Click to arm Fun Mode sequence"
+                delay: 300
             }
         }
     }
 
     // ═══════════════════════════════════════════
-    //  CASE 2: PLACEHOLDER CONTAINER (Awaiting update)
+    //  CASE 2: TACTICAL STANDBY VIEW (Awaiting Case 2 update)
     // ═══════════════════════════════════════════
     Item {
         id: case2Container
@@ -376,7 +386,7 @@ Rectangle {
 
         Rectangle {
             anchors.fill: parent
-            color: "#05070a"
+            color: "#050705"
 
             Column {
                 anchors.centerIn: parent
@@ -385,27 +395,47 @@ Rectangle {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "🛰️ CASE 2 ACTIVATED"
-                    color: root.accentColor
-                    font.pixelSize: 22
+                    color: root.hudGreen
                     font.family: root.fontFamily
+                    font.pixelSize: 20
                     font.weight: Font.Bold
                     font.letterSpacing: 2
                 }
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Tactical OpenStreetMap Satellite & Laser Sequence Initializing..."
-                    color: Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.7)
-                    font.pixelSize: 14
+                    text: "Tactical Satellite & Laser Grid Sequence Initializing..."
+                    color: root.mutedTextColor
                     font.family: root.fontFamily
+                    font.pixelSize: 13
+                    font.letterSpacing: 1
                 }
 
-                Button {
+                Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Return to Case 1"
-                    onClicked: {
-                        root.errorMessage = ""
-                        root.state = "CASE_1"
+                    width: 180
+                    height: 36
+                    radius: 2
+                    color: root.militaryOlive
+                    border.color: root.militaryBorder
+                    border.width: 1
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "[ RETURN TO BASE ]"
+                        color: root.textColor
+                        font.family: root.fontFamily
+                        font.pixelSize: 11
+                        font.weight: Font.Bold
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            root.errorMessage = ""
+                            root.state = "CASE_1"
+                        }
                     }
                 }
             }
@@ -413,7 +443,7 @@ Rectangle {
     }
 
     // ═══════════════════════════════════════════
-    //  FAILURE SEQUENCE ANIMATION (RAPID 3 BLINKS)
+    //  FAILURE SEQUENCE: RAPID 3-CYCLE BLINK ANIMATION
     // ═══════════════════════════════════════════
     SequentialAnimation {
         id: rapidBlinkAnim
@@ -434,17 +464,17 @@ Rectangle {
         NumberAnimation { target: errorText; property: "opacity"; to: 0.0; duration: 90; easing.type: Easing.Linear }
         NumberAnimation { target: errorText; property: "opacity"; to: 1.0; duration: 90; easing.type: Easing.Linear }
 
-        // Immediately after the 3rd blink, trigger Case 2
+        // Immediately after 3rd blink -> Trigger Case 2
         onFinished: {
             root.isBlinking = false
-            console.log("[SDDM] 3rd blink complete. Transitioning to Case 2.")
+            console.log("[TACTICAL SDDM] 3rd blink complete. Triggering Case 2.")
             root.state = "CASE_2"
             root.triggerCase2()
         }
     }
 
     // ═══════════════════════════════════════════
-    //  LOGIN LOGIC & STATE MACHINE HANDLERS
+    //  LOGIN LOGIC & STATE MACHINE
     // ═══════════════════════════════════════════
     function tryLogin() {
         if (root.isBlinking) return
@@ -452,12 +482,12 @@ Rectangle {
         loginBtn.isLoading = true
 
         if (!userField.text) {
-            handleLoginFailure("Please enter username")
+            handleLoginFailure("OPERATOR ID REQUIRED")
             userField.forceActiveFocus()
             return
         }
         if (!passField.text) {
-            handleLoginFailure("Please enter password")
+            handleLoginFailure("SECURITY PASSCODE REQUIRED")
             passField.forceActiveFocus()
             return
         }
@@ -465,8 +495,7 @@ Rectangle {
         if (typeof sddm !== "undefined" && sddm) {
             sddm.login(userField.text, passField.text, 0)
         } else {
-            // Standalone test / demo environment simulation:
-            // Entering wrong password or test credentials triggers failure sequence
+            // Standalone test/preview fallback
             testTimer.start()
         }
     }
@@ -476,8 +505,7 @@ Rectangle {
         interval: 350
         repeat: false
         onTriggered: {
-            // In standalone test mode, simulate login failure to test sequence
-            handleLoginFailure("Authentication failed: Access Denied")
+            handleLoginFailure("SECURITY CLEARANCE REJECTED")
         }
     }
 
@@ -488,7 +516,7 @@ Rectangle {
             // ── Fun Mode Failure Sequence ──
             // 1. Text changes to "Login Attempt Failed"
             root.errorMessage = "Login Attempt Failed"
-            // 2. Text color immediately turns glowing RED
+            // 2. Color immediately turns glowing RED
             root.currentErrorColor = root.alertRedColor
             errorText.opacity = 1.0
             // 3. Quick opacity animation causes the red text to blink rapidly exactly 3 times
@@ -496,18 +524,18 @@ Rectangle {
             rapidBlinkAnim.restart()
         } else {
             // ── Default Mode (Fun Mode OFF) ──
-            // Normal SDDM greeter failure: normal message, standard color, no extra animation
+            // Standard failure message, normal error color, no extra animation
             root.currentErrorColor = root.errorColor
-            root.errorMessage = defaultMsg ? defaultMsg : "Login failed. Check your credentials."
+            root.errorMessage = defaultMsg ? defaultMsg : "ACCESS DENIED: INVALID CREDENTIALS"
             errorText.opacity = 1.0
         }
     }
 
-    // ── Handle login signals from SDDM ──
+    // SDDM Signal Listeners
     Connections {
         target: (typeof sddm !== "undefined") ? sddm : null
         function onLoginFailed() {
-            handleLoginFailure("Login failed. Check your credentials.")
+            handleLoginFailure("ACCESS DENIED: INVALID CREDENTIALS")
             passField.text = ""
             passField.forceActiveFocus()
         }
@@ -516,7 +544,6 @@ Rectangle {
         }
     }
 
-    // Auto-focus username/password on load
     Component.onCompleted: {
         if (userField.text) {
             passField.forceActiveFocus()
