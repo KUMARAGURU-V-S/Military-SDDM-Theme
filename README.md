@@ -1,62 +1,66 @@
 # 🇮🇳 Military SDDM Theme (NIA Tactical Login)
 
-A tactical, high-security SDDM (Simple Desktop Display Manager) login theme based on pure Qt/QML, featuring the **National Investigation Agency (NIA)** emblem and an interactive multi-state architecture.
+A high-security, authentic tactical military SDDM login theme built with pure **Qt 6 / QML**, **QtLocation**, and **QtPositioning** without heavy web engines. Featuring the **National Investigation Agency (NIA)** emblem, state-machine security protocols, and an interactive satellite surveillance and laser-targeting sequence.
 
 ---
 
-## 🎨 Visual Design (Initial State)
+## 🎨 Visual Design & Architecture
 
-- **Background:** Dark military charcoal / pitch black (`#0a0a0a`).
-- **Centerpiece:** The National Investigation Agency (NIA) logo rendered in crisp vector SVG format, centered on the display.
-- **Login Prompts:** Clean, military-styled standard SDDM Username and Password input boxes positioned directly below the logo.
-- **UI Toggle:** A sleek, unobtrusive button in the bottom-right corner: `"Turn on Fun Mode"`.
-
----
-
-## ⚙️ Logic & Behavior (State Machine)
-
-### 1. Default Mode (Fun Mode OFF)
-- Operates as a standard, high-security SDDM greeter.
-- Normal authentication workflow applies.
-- Standard failure messages appear without extra animations.
-
-### 2. Active Mode (Fun Mode ON)
-- Clicking the bottom-right toggle enables **Fun Mode** (boolean flag = `true`).
-- Visual indicator switches to active state.
-
-### 3. Failure Sequence (When Fun Mode is ON and Login Fails)
-1. **Error Text Update:** Text directly below the password box changes to `"Login Attempt Failed"`.
-2. **Alert Glow:** Color immediately shifts to a glowing tactical **RED** (`#ff0033`).
-3. **Rapid Blinking:** A fast opacity animation causes the red alert text to blink rapidly **exactly 3 times**.
-4. **Trigger Case 2:** Immediately following the 3rd blink, the system triggers **"Case 2"** (the tactical interactive OpenStreetMap satellite and laser sequence).
+### Case 1: Central Command Authentication Terminal
+- **Background:** Deep military stealth charcoal (`#080a08`) with tactical reticle crosshairs.
+- **Centerpiece:** National Investigation Agency (NIA) vector SVG emblem enlarged to **250px** for commanding visual authority.
+- **Login Prompts:** Tactical monospace input fields (`OPERATOR //:` and `PASSCODE //:`) positioned directly beneath the emblem, with night-vision phosphor green active focus highlights.
+- **Action Button:** Grammatically precise military command: **`[ AUTHENTICATE ]`** (configurable to `[ LOG IN ]` with proper verb spacing).
+- **Session & Power Controls:**
+  - Tactical Desktop Session Selector: `SESSION //: [ PLASMA (WAYLAND) ▾ ]`.
+  - Military Power Station: `[ ⏻ SHUTDOWN ]`, `[ ⟳ REBOOT ]`, `[ ⏾ SLEEP ]`.
+- **UI Toggle:** Bottom-right corner military radio switch labeled `Turn on Fun Mode` $\rightarrow$ arms to `[ FUN MODE: ARMED ]` with crimson beacon.
 
 ---
 
-## 📁 Repository Structure
-
-```
-Military-SDDM-Theme/
-├── Main.qml                # Primary SDDM QML script with state machine
-├── metadata.desktop        # SDDM theme metadata
-├── theme.conf              # Theme configuration properties
-├── assets/
-│   ├── NIA-logo.svg        # Centered SVG logo
-│   └── NIA-logo.png        # Source high-resolution PNG
-├── raw-sddm-prototype/     # Prototype reference assets
-└── v1/
-    └── sddm-worldmap-theme/ # Archived v1 World Map interactive theme
-```
+### Case 2: Tactical Satellite Reconnaissance & Laser Sequence
+When Fun Mode is armed and authentication fails (or upon direct trigger):
+1. Error changes to `"Login Attempt Failed"` in glowing alert red (`#ff0033`).
+2. Rapidly blinks **exactly 3 times**.
+3. Seamlessly triggers **Case 2**:
+   - **Interactive Base Map:** Live OpenStreetMap layer starting from a global orbital perspective.
+   - **Geographical Pan & Zoom:** Animates dynamically to center on India ($23.5937^\circ\text{ N}, 78.9629^\circ\text{ E}$) at zoom $5.5$.
+   - **Satellite Deployment:** `GSAT-7A // MIL-ORBIT` (`MapQuickItem`) flies across real-world GPS coordinates into northern India airspace ($34.50^\circ\text{ N}, 76.50^\circ\text{ E}$).
+   - **Pulsing Ground Reticle:** Locks onto Central India Command ($21.1458^\circ\text{ N}, 79.0882^\circ\text{ E}$) with expanding radar rings and crosshairs.
+   - **Laser Targeting Beam:** Fires a glowing, energy-pulsing coherent red beam (`MapPolyline`) from the satellite directly into the ground target.
+   - **Tactical HUD Feed:** Top-left semi-transparent red console typing out live synchronized events:
+     * `> INITIALIZING ORBITAL TRACKING...`
+     * `> SATELLITE UPLINK ESTABLISHED.`
+     * `> SECURING ENCRYPTED CHANNELS...`
+     * `> ACQUIRING GPS COORDINATES...`
+     * `> TRIANGULATING TRAJECTORY...`
+     * `> TARGET LOCKED.`
+   - **Live Cursor Telemetry:** Real-time GPS coordinate reader tracking cursor hover across the map.
 
 ---
 
-## 🧪 Testing the Theme
+## 🚀 Quick Installation
 
-To test without logging out:
+To install and activate the theme on your system:
 
 ```bash
-# Using sddm-greeter test mode
-sddm-greeter --test-mode --theme /mnt/linux_d_drive/Github/Military-SDDM-Theme
+cd /mnt/linux_d_drive/Github/Military-SDDM-Theme
+sudo ./install.sh
+```
 
-# Or using qml6
-QT_QPA_PLATFORM=xcb qml6 Main.qml
+*(Optional: use `./install.sh --no-cache` to skip tile pre-downloading, or `./install.sh --uninstall` to remove).*
+
+---
+
+## 🧪 Live Preview & Testing
+
+To test the theme in a standalone test window without logging out:
+
+```bash
+# Using Plasma 6 / Qt 6 SDDM Greeter:
+sddm-greeter-qt6 --test-mode --theme /mnt/linux_d_drive/Github/Military-SDDM-Theme
+
+# Or using qml6 directly:
+cd /mnt/linux_d_drive/Github/Military-SDDM-Theme
+qml6 Main.qml
 ```

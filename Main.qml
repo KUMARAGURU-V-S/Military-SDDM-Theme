@@ -316,6 +316,132 @@ Rectangle {
                         onClicked: root.tryLogin()
                     }
                 }
+
+                // ── Session Selector ──
+                RowLayout {
+                    width: parent.width
+                    visible: (typeof config !== "undefined" && config.showSessionSelector === "false") ? false : true
+                    spacing: 8
+
+                    Text {
+                        text: "SESSION //:"
+                        font.family: root.fontFamily
+                        font.pixelSize: 11
+                        font.weight: Font.Bold
+                        color: root.mutedTextColor
+                    }
+
+                    ComboBox {
+                        id: sessionSelector
+                        Layout.fillWidth: true
+                        height: 34
+                        model: (typeof sessionModel !== "undefined" && sessionModel) ? sessionModel : ["Plasma (Wayland)", "Plasma (X11)", "Custom Session"]
+                        currentIndex: (typeof sessionModel !== "undefined" && sessionModel) ? sessionModel.lastIndex : 0
+                        textRole: "name"
+                        font.family: root.fontFamily
+                        font.pixelSize: 11
+
+                        background: Rectangle {
+                            radius: 2
+                            color: root.inputBgColor
+                            border.color: root.inputBorderColor
+                            border.width: 1
+                        }
+
+                        contentItem: Text {
+                            text: sessionSelector.displayText
+                            color: root.textColor
+                            font: sessionSelector.font
+                            leftPadding: 8
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── Tactical Power Controls (Bottom-Left) ──
+        Row {
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.margins: 18
+            spacing: 10
+            visible: (typeof config !== "undefined" && config.showPowerButtons === "false") ? false : true
+
+            // Power Off
+            Rectangle {
+                width: powerOffLayout.implicitWidth + 14
+                height: 28
+                radius: 2
+                color: powerOffMouse.containsMouse ? Qt.rgba(217, 56, 58, 0.25) : "#0d130e"
+                border.color: powerOffMouse.containsMouse ? root.errorColor : root.inputBorderColor
+                border.width: 1
+
+                RowLayout {
+                    id: powerOffLayout
+                    anchors.centerIn: parent
+                    spacing: 4
+                    Text { text: "⏻"; color: powerOffMouse.containsMouse ? root.errorColor : root.mutedTextColor; font.pixelSize: 11 }
+                    Text { text: "SHUTDOWN"; color: powerOffMouse.containsMouse ? root.errorColor : root.mutedTextColor; font.family: root.fontFamily; font.pixelSize: 10; font.weight: Font.Bold }
+                }
+                MouseArea {
+                    id: powerOffMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: { if (typeof sddm !== "undefined" && sddm) sddm.powerOff() }
+                }
+            }
+
+            // Reboot
+            Rectangle {
+                width: rebootLayout.implicitWidth + 14
+                height: 28
+                radius: 2
+                color: rebootMouse.containsMouse ? Qt.rgba(78, 242, 137, 0.15) : "#0d130e"
+                border.color: rebootMouse.containsMouse ? root.hudGreen : root.inputBorderColor
+                border.width: 1
+
+                RowLayout {
+                    id: rebootLayout
+                    anchors.centerIn: parent
+                    spacing: 4
+                    Text { text: "⟳"; color: rebootMouse.containsMouse ? root.hudGreen : root.mutedTextColor; font.pixelSize: 11 }
+                    Text { text: "REBOOT"; color: rebootMouse.containsMouse ? root.hudGreen : root.mutedTextColor; font.family: root.fontFamily; font.pixelSize: 10; font.weight: Font.Bold }
+                }
+                MouseArea {
+                    id: rebootMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: { if (typeof sddm !== "undefined" && sddm) sddm.reboot() }
+                }
+            }
+
+            // Suspend
+            Rectangle {
+                width: suspendLayout.implicitWidth + 14
+                height: 28
+                radius: 2
+                color: suspendMouse.containsMouse ? Qt.rgba(78, 242, 137, 0.15) : "#0d130e"
+                border.color: suspendMouse.containsMouse ? root.hudGreen : root.inputBorderColor
+                border.width: 1
+
+                RowLayout {
+                    id: suspendLayout
+                    anchors.centerIn: parent
+                    spacing: 4
+                    Text { text: "⏾"; color: suspendMouse.containsMouse ? root.hudGreen : root.mutedTextColor; font.pixelSize: 11 }
+                    Text { text: "SLEEP"; color: suspendMouse.containsMouse ? root.hudGreen : root.mutedTextColor; font.family: root.fontFamily; font.pixelSize: 10; font.weight: Font.Bold }
+                }
+                MouseArea {
+                    id: suspendMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: { if (typeof sddm !== "undefined" && sddm) sddm.suspend() }
+                }
             }
         }
 
@@ -429,12 +555,15 @@ Rectangle {
             property real satLon: 35.0
             property real targetLat: 21.1458   // Central India (Nagpur Command Zone)
             property real targetLon: 79.0882
+            property real cursorLat: 21.1458
+            property real cursorLon: 79.0882
             property bool laserActive: false
             property bool targetLocked: false
 
             // Map pan/drag interaction
             MouseArea {
                 anchors.fill: parent
+                hoverEnabled: true
                 property real lastX: 0
                 property real lastY: 0
                 property bool isDragging: false
@@ -445,6 +574,11 @@ Rectangle {
                     isDragging = true
                 }
                 onPositionChanged: function(mouse) {
+                    var coord = worldMap.toCoordinate(Qt.point(mouse.x, mouse.y))
+                    if (coord && !isNaN(coord.latitude)) {
+                        worldMap.cursorLat = coord.latitude
+                        worldMap.cursorLon = coord.longitude
+                    }
                     if (isDragging) {
                         var dx = mouse.x - lastX
                         var dy = mouse.y - lastY
@@ -810,6 +944,33 @@ Rectangle {
                     color: Qt.rgba(1.0, 0.4, 0.4, 0.6)
                     font.family: root.fontFamily
                     font.pixelSize: 9
+                    font.letterSpacing: 0.5
+                }
+            }
+        }
+
+        // ── Real-time Interactive GPS Cursor Telemetry (Bottom-Left) ──
+        Rectangle {
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.margins: 20
+            width: 290
+            height: 38
+            radius: 2
+            color: Qt.rgba(0.05, 0.01, 0.01, 0.85)
+            border.color: Qt.rgba(1.0, 0.0, 0.2, 0.4)
+            border.width: 1
+
+            RowLayout {
+                anchors.centerIn: parent
+                spacing: 8
+                Text { text: "📍"; font.pixelSize: 11 }
+                Text {
+                    text: "CURSOR GPS //: " + (worldMap.cursorLat >= 0 ? worldMap.cursorLat.toFixed(3) + "° N" : Math.abs(worldMap.cursorLat).toFixed(3) + "° S") + ", " + (worldMap.cursorLon >= 0 ? worldMap.cursorLon.toFixed(3) + "° E" : Math.abs(worldMap.cursorLon).toFixed(3) + "° W")
+                    color: "#ff4d4d"
+                    font.family: root.fontFamily
+                    font.pixelSize: 10
+                    font.weight: Font.Bold
                     font.letterSpacing: 0.5
                 }
             }
