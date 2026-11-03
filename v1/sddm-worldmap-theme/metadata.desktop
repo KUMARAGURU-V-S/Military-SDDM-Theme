@@ -1,0 +1,12 @@
+[SddmGreeterTheme]
+Name=World Map Interactive
+Description=Interactive world map SDDM login theme with zoomable map, country navigation, and cached offline tiles
+Author=lucid-planck
+Copyright=MIT License
+Type=sddm-theme
+Version=1.0
+Website=
+Screenshot=preview.png
+MainScript=Main.qml
+ConfigFile=theme.conf
+TranslationsDirectory=translations

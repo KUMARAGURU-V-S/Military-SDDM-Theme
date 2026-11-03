@@ -1,0 +1,12 @@
+[SddmGreeterTheme]
+Name=Military SDDM Theme
+Description=National Investigation Agency (NIA) Tactical SDDM Login Theme
+Author=lucid-planck
+Copyright=MIT License
+Type=sddm-theme
+Version=1.0
+Website=
+Screenshot=assets/NIA-logo.png
+MainScript=Main.qml
+ConfigFile=theme.conf
+TranslationsDirectory=translations
